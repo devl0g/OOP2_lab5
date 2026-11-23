@@ -1,0 +1,163 @@
+classDiagram
+direction TB
+
+class Position {
+  <<struct>>
+  +int64_t x
+  +int64_t y
+}
+
+class Shape {
+  <<abstract>>
+  +getShapeName() string
+  +getShapeID() uint8_t
+  +createInstance() Shape
+  +renderShape(painter) void
+  +renderPhantomShape(painter) void
+  +updateShapeConfig(dragStart, dragEnd) void
+  +getToolbarIcon() QIcon
+}
+
+class DotShape {
+  -Position position
+}
+class LineShape {
+  -Position startPosition
+  -Position endPosition
+}
+class RectangleShape {
+  -Position centerPosition
+  -Position cornerPosition
+}
+class OvalShape {
+  -Position startPosition
+  -Position endPosition
+}
+class LineDotsShape
+class CubeShape {
+  -Position startPosition
+  -Position endPosition
+}
+
+class DotsContaining {
+  -vector dots
+  +addDot(dot) DotShape
+  +getDot(index) DotShape
+}
+class LinesContaining {
+  -vector lines
+  +addLine(line) LineShape
+  +getLine(index) LineShape
+}
+class RectanglesContaining {
+  -vector rectangles
+  +addRectangle(rect) RectangleShape
+  +getRectangle(index) RectangleShape
+}
+
+class ShapeRecord {
+  <<struct>>
+  +Shape shape
+  +Position start
+  +Position end
+}
+
+class MouseState {
+  <<struct>>
+  +bool isDragging
+  +int64_t dragStartX
+  +int64_t dragStartY
+  +int64_t dragEndX
+  +int64_t dragEndY
+}
+
+class ShapesCanvas {
+  -Shape currentShapeType
+  -Shape drawingShape
+  -ShapeRecord canvasShapes
+  -uint64_t shapesCount
+  -int64_t selectedIndex
+  +setDrawingShape(shape) void
+  +addShape(shape, start, end) bool
+  +removeShape(index) void
+  +clearShapes() void
+  +setSelectedIndex(index) void
+  +getShapesCount() uint64_t
+  +getRecord(index) ShapeRecord
+  +shapesChanged() signal
+}
+
+class ShapesTable {
+  -QTableWidget table
+  -QPushButton deleteButton
+  -RowCallback onRowSelected
+  -RowCallback onRowDeleteRequested
+  -VoidCallback onClosed
+  +setRows(rows) void
+  +setOnRowSelected(callback) void
+  +setOnRowDeleteRequested(callback) void
+  +setOnClosed(callback) void
+}
+
+class TableRow {
+  <<struct>>
+  +QString name
+  +QString start
+  +QString end
+}
+
+class MyEditor {
+  <<Singleton>>
+  -MyEditor instance
+  -ShapesCanvas canvas
+  -ShapesTable shapesTable
+  -QToolBar shapesToolbar
+  -QMenu shapesMenu
+  -QAction tableAction
+  -vector registeredShapes
+  -map toolbarShapesButtons
+  +getInstance() MyEditor
+  +destroyInstance() void
+  +registerShape() void
+  -refreshTable() void
+  -createShapeByID(id) Shape
+  -changeShape(id) void
+  -saveToFile() void
+  -loadFromFile() void
+  -toggleTable(visible) void
+}
+
+class QMainWindow
+class QWidget
+class QDialog
+
+Shape <|-- DotShape
+Shape <|-- LineShape
+Shape <|-- RectangleShape
+Shape <|-- OvalShape
+Shape <|-- CubeShape
+LineShape <|-- LineDotsShape
+
+DotsContaining <|-- LineDotsShape : private
+LinesContaining <|-- CubeShape : private
+RectanglesContaining <|-- CubeShape : private
+
+DotsContaining o-- DotShape
+LinesContaining o-- LineShape
+RectanglesContaining o-- RectangleShape
+
+QMainWindow <|-- MyEditor
+QWidget <|-- ShapesCanvas
+QDialog <|-- ShapesTable
+
+MyEditor *-- ShapesCanvas
+MyEditor *-- ShapesTable
+MyEditor o-- Shape : registeredShapes
+ShapesCanvas *-- ShapeRecord : max 113
+ShapesCanvas *-- MouseState
+ShapesCanvas o-- Shape : currentShapeType
+ShapeRecord *-- Shape
+ShapeRecord --> Position
+ShapesTable *-- TableRow : Row
+ShapesTable ..> MyEditor : callbacks via std function
+MyEditor ..> ShapesCanvas : signal shapesChanged
