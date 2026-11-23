@@ -5,6 +5,7 @@
 #include "../../models/shapes/shape.hpp"
 #include <QWidget>
 #include <cstdint>
+#include <memory>
 
 struct MouseState {
   bool isDragging { false };
@@ -12,6 +13,12 @@ struct MouseState {
   int64_t dragStartY { -1 };
   int64_t dragEndX { -1 };
   int64_t dragEndY { -1 };
+};
+
+struct ShapeRecord {
+  std::unique_ptr<Shape> shape { nullptr };
+  Position start {};
+  Position end {};
 };
 
 class ShapesCanvas : public QWidget {
@@ -27,6 +34,17 @@ public:
       currentShapeType = std::move(shape);
     }
 
+    [[nodiscard]] uint64_t getShapesCount() const noexcept { return shapesCount; }
+    [[nodiscard]] const ShapeRecord& getRecord(uint64_t index) const { return canvasShapes[index]; }
+
+    bool addShape(std::unique_ptr<Shape> shape, Position start, Position end);
+    void removeShape(uint64_t index);
+    void clearShapes();
+    void setSelectedIndex(int64_t index);
+
+signals:
+    void shapesChanged();
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
@@ -37,8 +55,9 @@ private:
     std::unique_ptr<Shape> currentShapeType { nullptr };
     MouseState mouseState {};
     std::unique_ptr<Shape> drawingShape { nullptr };
-    std::unique_ptr<Shape> canvasShapes[MAX_CANVAS_SHAPES];
+    ShapeRecord canvasShapes[MAX_CANVAS_SHAPES];
     uint64_t shapesCount { 0 };
+    int64_t selectedIndex { -1 };
 };
 
 #endif
