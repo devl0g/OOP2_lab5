@@ -158,7 +158,7 @@ void MyEditor::toggleTable(bool visible) {
 
 void MyEditor::saveToFile() {
   const QString path = QFileDialog::getSaveFileName(
-      this, tr("Зберегти об'єкти"), QString(), tr("Текстові файли (*.txt);;Усі файли (*)"));
+      this, tr("Зберегти об'єкти"), QString(), tr("CSV файли (*.csv);;Усі файли (*)"));
   if (path.isEmpty()) {
     return;
   }
@@ -184,7 +184,7 @@ void MyEditor::saveToFile() {
 
 void MyEditor::loadFromFile() {
   const QString path = QFileDialog::getOpenFileName(
-      this, tr("Відкрити об'єкти"), QString(), tr("Текстові файли (*.txt);;Усі файли (*)"));
+      this, tr("Відкрити об'єкти"), QString(), tr("CSV файли (*.csv);;Усі файли (*)"));
   if (path.isEmpty()) {
     return;
   }
