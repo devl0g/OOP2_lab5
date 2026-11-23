@@ -12,6 +12,7 @@ void ShapesCanvas::paintEvent(QPaintEvent* event) {
   painter.fillRect(rect(), QColor(255, 255, 255));
 
   for (uint64_t shapeIndex = 0; shapeIndex < shapesCount; ++shapeIndex) {
+    if (shapeIndex == selectedIndex) continue;
     canvasShapes[shapeIndex].shape->renderShape(painter);
   }
 
