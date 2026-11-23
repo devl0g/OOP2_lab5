@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <utility>
 #include "../components/shapesCanvas.hpp"
+#include "../popups/shapesTable.hpp"
 
 class MyEditor : public QMainWindow {
   Q_OBJECT
@@ -34,20 +35,29 @@ public:
 private:
   explicit MyEditor(QWidget* parent = nullptr) noexcept;
   ~MyEditor() noexcept = default;
-  QMenu* shapesMenu;
-  QToolBar* shapesToolbar;
-  ShapesCanvas* canvas;
+  QMenu* shapesMenu { nullptr };
+  QToolBar* shapesToolbar { nullptr };
+  ShapesCanvas* canvas { nullptr };
+  ShapesTable* shapesTable { nullptr };
+  QAction* tableAction { nullptr };
   uint64_t selectedShapeID { 0 };
   std::vector<std::unique_ptr<Shape>> registeredShapes;
   std::map<uint8_t, QAction*> toolbarShapesButtons;
 
   void initUI() noexcept;
+  void initMenu() noexcept;
+  void initTable();
   void updateShapesMenu() noexcept;
   void changeShape(uint8_t shapeID);
+  void refreshTable();
+  std::unique_ptr<Shape> createShapeByID(uint8_t shapeID) const;
 
 signals:
 private slots:
   void shapeSelected(QAction* action);
+  void toggleTable(bool visible);
+  void saveToFile();
+  void loadFromFile();
 };
 
 #endif

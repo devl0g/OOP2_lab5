@@ -22,6 +22,7 @@ add_executable(Lab1
   ./src/main.cpp
   ./src/ui/windows/myEditor.cpp
   ./src/ui/components/shapesCanvas.cpp
+  ./src/ui/popups/shapesTable.cpp
 )
 
 target_link_libraries(Lab1 PRIVATE Qt6::Widgets)
