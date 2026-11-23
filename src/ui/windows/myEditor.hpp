@@ -11,8 +11,9 @@ class MyEditor : public QMainWindow {
   Q_OBJECT
 
 public:
-  explicit MyEditor(QWidget* parent = nullptr) noexcept;
-  ~MyEditor() noexcept;
+  static MyEditor* getInstance();
+  static void destroyInstance();
+
 
   template<std::derived_from<Shape> T>
   void registerShape() {
@@ -31,6 +32,8 @@ public:
   }
 
 private:
+  explicit MyEditor(QWidget* parent = nullptr) noexcept;
+  ~MyEditor() noexcept = default;
   QMenu* shapesMenu;
   QToolBar* shapesToolbar;
   ShapesCanvas* canvas;

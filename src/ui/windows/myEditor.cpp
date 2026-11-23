@@ -1,18 +1,28 @@
 #include "myEditor.hpp"
 #include "myEditor.hpp"
-#include "../../utils/logger.hpp"
 #include "../../config.hpp"
 #include <QtWidgets/QMenuBar>
 #include <string>
+
+static MyEditor* instance = nullptr;
+
+MyEditor* MyEditor::getInstance() {
+  if (!instance) {
+    instance = new MyEditor();
+  }
+  return instance;
+}
+
+void MyEditor::destroyInstance() {
+  delete instance;
+  instance = nullptr;
+}
+
 
 MyEditor::MyEditor(QWidget* parent) noexcept : 
   QMainWindow(parent) {
 
   initUI();
-}
-
-MyEditor::~MyEditor() noexcept {
-  Logger::info("window closed");
 }
 
 // UI

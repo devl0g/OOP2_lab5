@@ -4,15 +4,13 @@
 #include "models/shapes/rectangle.hpp"
 #include "models/shapes/lineDots.hpp"
 #include "models/shapes/cube.hpp"
-#include "utils/logger.hpp"
 #include "ui/windows/myEditor.hpp"
 #include <QApplication>
-#include <memory>
 
 int main(int argc, char** argv) {
   QApplication app(argc, argv);
 
-  std::unique_ptr<MyEditor> myEditorInstance { std::make_unique<MyEditor>() };
+  MyEditor* myEditorInstance { MyEditor::getInstance() };
 
   myEditorInstance->registerShape<DotShape>();
   myEditorInstance->registerShape<LineShape>();
@@ -23,6 +21,8 @@ int main(int argc, char** argv) {
 
   myEditorInstance->show();
 
-  Logger::info("window initiation");
-  return app.exec();
+  const int result = app.exec();
+
+  MyEditor::destroyInstance();
+  return result;
 }
