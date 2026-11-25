@@ -158,7 +158,9 @@ void MyEditor::toggleTable(bool visible) {
 
 void MyEditor::saveToFile() {
   const QString path = QFileDialog::getSaveFileName(
-      this, tr("Зберегти об'єкти"), QString(), tr("CSV файли (*.csv);;Усі файли (*)"));
+    this, tr("Зберегти об'єкти"), QString(), tr("CSV файли (*.csv);;Усі файли (*)")
+  );
+
   if (path.isEmpty()) {
     return;
   }
@@ -184,7 +186,9 @@ void MyEditor::saveToFile() {
 
 void MyEditor::loadFromFile() {
   const QString path = QFileDialog::getOpenFileName(
-      this, tr("Відкрити об'єкти"), QString(), tr("CSV файли (*.csv);;Усі файли (*)"));
+    this, tr("Відкрити об'єкти"), QString(), tr("CSV файли (*.csv);;Усі файли (*)")
+  );
+
   if (path.isEmpty()) {
     return;
   }
@@ -202,7 +206,6 @@ void MyEditor::loadFromFile() {
   in.setEncoding(QStringConverter::Utf8);
   int lineNumber = 0;
 
-  // Parse everything first, so a broken file does not destroy the current picture
   while (!in.atEnd()) {
     const QString line = in.readLine();
     ++lineNumber;
@@ -232,8 +235,9 @@ void MyEditor::loadFromFile() {
     }
 
     if (!valid) {
-      QMessageBox::warning(this, tr("Помилка"),
-                           tr("Некоректний рядок %1 у файлі.").arg(lineNumber));
+      QMessageBox::warning(
+        this, tr("Помилка"), tr("Некоректний рядок %1 у файлі.").arg(lineNumber)
+      );
       return;
     }
 
@@ -258,8 +262,9 @@ void MyEditor::loadFromFile() {
   canvas->update();
 
   if (truncated) {
-    QMessageBox::information(this, tr("Увага"),
-                             tr("Файл містить більше об'єктів, ніж дозволено (%1). Зайві пропущено.")
-                                 .arg(MAX_CANVAS_SHAPES));
+    QMessageBox::information(
+      this, tr("Увага"),
+      tr("Файл містить більше об'єктів, ніж дозволено (%1). Зайві пропущено.").arg(MAX_CANVAS_SHAPES)
+    );
   }
 }
