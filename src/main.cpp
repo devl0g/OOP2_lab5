@@ -11,6 +11,16 @@ int main(int argc, char** argv) {
   QApplication app(argc, argv);
 
   MyEditor* myEditorInstance { MyEditor::getInstance() };
+  auto shapesTable = new ShapesTable();
+
+  shapesTable->setOnRowSelected([myEditorInstance](int row) {
+    myEditorInstance->getCanvas()->setSelectedIndex(row);
+  });
+  shapesTable->setOnRowDeleteRequested([myEditorInstance](int row) {
+    myEditorInstance->getCanvas()->removeShape(static_cast<uint64_t>(row));
+  });
+
+  myEditorInstance->setTable(shapesTable);
 
   myEditorInstance->registerShape<DotShape>();
   myEditorInstance->registerShape<LineShape>();

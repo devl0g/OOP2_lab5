@@ -2,6 +2,7 @@
 #include "myEditor.hpp"
 #include "../../config.hpp"
 #include <QtWidgets/QMenuBar>
+#include <iostream>
 #include <qdir.h>
 #include <qfiledialog.h>
 #include <qmessagebox.h>
@@ -27,7 +28,6 @@ MyEditor::MyEditor(QWidget* parent) noexcept :
 
   initUI();
   initMenu();
-  initTable();
 }
 
 // UI
@@ -37,6 +37,8 @@ void MyEditor::initUI() noexcept {
 
   canvas = new ShapesCanvas(this);
   setCentralWidget(canvas);
+
+  connect(canvas, &ShapesCanvas::shapesChanged, this, &MyEditor::refreshTable);
 }
 
 void MyEditor::initMenu() noexcept {
@@ -52,8 +54,7 @@ void MyEditor::initMenu() noexcept {
 
   fileMenu->addSeparator();
 
-  tableAction = fileMenu->addAction(tr("&Таблиця об'єктів"));
-  tableAction->setCheckable(true);
+  QAction* tableAction = fileMenu->addAction(tr("&Таблиця об'єктів"));
   tableAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
 
   fileMenu->addSeparator();
@@ -67,25 +68,9 @@ void MyEditor::initMenu() noexcept {
   shapesToolbar = new QToolBar("Об'єкти", this);
   addToolBar(shapesToolbar);
 
-  connect(tableAction, &QAction::toggled, this, &MyEditor::toggleTable);
+  connect(tableAction, &QAction::triggered, this, &MyEditor::toggleTable);
   connect(shapesMenu, &QMenu::triggered, this, &MyEditor::shapeSelected);
   connect(shapesToolbar, &QToolBar::actionTriggered, this, &MyEditor::shapeSelected);
-}
-
-void MyEditor::initTable() {
-  shapesTable = new ShapesTable(this);
-
-  shapesTable->setOnRowSelected([this](int row) {
-    canvas->setSelectedIndex(row);
-  });
-  shapesTable->setOnRowDeleteRequested([this](int row) {
-    canvas->removeShape(static_cast<uint64_t>(row));
-  });
-  shapesTable->setOnClosed([this] {
-    tableAction->setChecked(false);
-  });
-
-  connect(canvas, &ShapesCanvas::shapesChanged, this, &MyEditor::refreshTable);
 }
 
 void MyEditor::refreshTable() {
@@ -147,19 +132,18 @@ void MyEditor::shapeSelected(QAction* action) {
 }
 
 void MyEditor::toggleTable(bool visible) {
-  if (visible) {
-    shapesTable->show();
-    shapesTable->raise();
-    shapesTable->activateWindow();
-  } else if (shapesTable->isVisible()) {
-    shapesTable->close();
-  }
+  shapesTable->show();
+  shapesTable->raise();
+  shapesTable->activateWindow();
 }
 
 void MyEditor::saveToFile() {
-  const QString path = QFileDialog::getSaveFileName(
-    this, tr("Зберегти об'єкти"), QString(), tr("CSV файли (*.csv);;Усі файли (*)")
-  );
+  QFileDialog dialog(this, "Save someting", QString(),
+                   "Comma-separated file (*.csv)");
+  dialog.setDefaultSuffix(".csv");
+  dialog.setAcceptMode(QFileDialog::AcceptSave);
+  if (!dialog.exec()) return;
+  const auto path = dialog.selectedFiles().front();
 
   if (path.isEmpty()) {
     return;

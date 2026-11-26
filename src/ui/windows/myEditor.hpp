@@ -15,6 +15,13 @@ public:
   static MyEditor* getInstance();
   static void destroyInstance();
 
+  void setTable(ShapesTable* table) {
+    this->shapesTable = table;
+  }
+
+  ShapesCanvas* getCanvas() {
+    return this->canvas;
+  }
 
   template<std::derived_from<Shape> T>
   void registerShape() {
@@ -39,14 +46,12 @@ private:
   QToolBar* shapesToolbar { nullptr };
   ShapesCanvas* canvas { nullptr };
   ShapesTable* shapesTable { nullptr };
-  QAction* tableAction { nullptr };
   uint64_t selectedShapeID { 0 };
   std::vector<std::unique_ptr<Shape>> registeredShapes;
   std::map<uint8_t, QAction*> toolbarShapesButtons;
 
   void initUI() noexcept;
   void initMenu() noexcept;
-  void initTable();
   void updateShapesMenu() noexcept;
   void changeShape(uint8_t shapeID);
   void refreshTable();
